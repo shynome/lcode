@@ -79,6 +79,9 @@ var rootCmd = &cobra.Command{
 		for _, f := range allow {
 			if true {
 				link := fmt.Sprintf("vscode://lcode.hub/%s%s", webdavHost, f)
+				if stat, err := os.Stat(f); err == nil && !stat.IsDir() {
+					link += "#file"
+				}
 				log.Println(link)
 			}
 			if args.webdav {
