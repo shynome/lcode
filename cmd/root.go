@@ -14,6 +14,7 @@ import (
 	"net/rpc"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/yamux"
@@ -48,7 +49,11 @@ var rootCmd = &cobra.Command{
 		wd := try.To1(os.Getwd())
 		var allow = make([]string, len(files))
 		for i, f := range files {
-			allow[i] = filepath.Join(wd, f)
+			if strings.HasPrefix(f, "/") {
+				allow[i] = f
+			} else {
+				allow[i] = filepath.Join(wd, f)
+			}
 		}
 
 		func() {
