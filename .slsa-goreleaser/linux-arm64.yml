@@ -30,4 +30,4 @@ binary: lcode-hub-{{ .Os }}-{{ .Arch }}
 
 # (Optional) ldflags generated dynamically in the workflow, and set as the `evaluated-envs` input variables in the workflow.
 ldflags:
-  - "-X main.VERSION={{ .Env.VERSION }}"
+  - "-X main.Version={{ .Env.VERSION }}"
