@@ -6,6 +6,7 @@ package cmd
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	"hash/fnv"
 	"log"
 	"net"
@@ -58,7 +59,6 @@ var rootCmd = &cobra.Command{
 
 		conn := websocket.NetConn(ctx, socket, websocket.MessageBinary)
 		webdavHost := resp.Header.Get("X-Webdav-Host")
-		log.Println(webdavHost)
 		sess := try.To1(yamux.Client(conn, nil))
 		defer sess.Close()
 
@@ -70,6 +70,16 @@ var rootCmd = &cobra.Command{
 		var h http.Handler = &webdav.Handler{
 			FileSystem: webdav.Dir("/"),
 			LockSystem: rls,
+		}
+		for _, f := range allow {
+			if true {
+				link := fmt.Sprintf("vscode://lcode.hub/%s%s", webdavHost, f)
+				log.Println(link)
+			}
+			if args.webdav {
+				link := fmt.Sprintf("webdav://%s%s", webdavHost, f)
+				log.Println(link)
+			}
 		}
 		http.Serve(sess, h)
 	},
