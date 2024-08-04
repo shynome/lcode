@@ -50,7 +50,7 @@ var rootCmd = &cobra.Command{
 		var allow = make([]string, len(files))
 		for i, f := range files {
 			if strings.HasPrefix(f, "/") {
-				allow[i] = f
+				allow[i] = filepath.Join("/", f)
 			} else {
 				allow[i] = filepath.Join(wd, f)
 			}
