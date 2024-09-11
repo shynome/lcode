@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/hex"
 	"fmt"
 	"hash/fnv"
@@ -94,7 +95,22 @@ var rootCmd = &cobra.Command{
 }
 
 func getMacHashTry() string {
-	ifaces := try.To1(net.Interfaces())
+	ifaces, _ := net.Interfaces()
+	if len(ifaces) == 0 {
+		home := try.To1(os.UserHomeDir())
+		lcodeDir := filepath.Join(home, ".lcode")
+		try.To(os.MkdirAll(lcodeDir, os.ModePerm))
+		fakeMacFile := filepath.Join(lcodeDir, "fake-mac")
+		fakeMac, _ := os.ReadFile(fakeMacFile)
+		if len(fakeMac) == 0 {
+			fakeMac = make([]byte, 6)
+			try.To1(rand.Read(fakeMac))
+			try.To(os.WriteFile(fakeMacFile, fakeMac, os.ModePerm))
+		}
+		ifaces = []net.Interface{
+			{Flags: net.FlagUp, HardwareAddr: fakeMac},
+		}
+	}
 	hasher := fnv.New32a()
 	for _, iface := range ifaces {
 		if iface.Flags&net.FlagUp != 0 && iface.HardwareAddr != nil {
